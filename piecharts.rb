@@ -2,14 +2,14 @@ require( "./validation")
 require( "./stats")
 require( "./app_database")
 
-LIMIT =40  # Modify this to set how many values are listed in under sexp, function and keyword lists
+LIMIT = 40  # Modify this to set how many values are listed in under sexp, function and keyword lists
 ERRORS = false  # suppress errors
 
 #=========================================================== MAIN METHOD ======================================#
-puts "type help for commands, 'q' to quit"
 data = Stats.new
 apps = AppDatabase.new # Main loop: For each rails app ... 
 path = Dir["/homes/mcueno/apps/*"]
+dumpFile = File.new("dump.txt", 'w')
 path.each do |path| 
 
   data.plus_one_app
@@ -36,6 +36,9 @@ path.each do |path|
       when "model_defined" then data.plus_one("model_defined"); data.add(array[0]); apps.add(array[0])
       end
       if array[1] == "gem" then data.plus_one("gem"); data.add(array[0]); apps.add(array[0]) end
+      
+      # Dump validator types to file
+      File.open("dump.txt", 'w') { |f| f.write(line) } 
     }
 
     # Parse rsbc.log and add to validations appropriately
@@ -43,7 +46,9 @@ path.each do |path|
       data.parse_rsbc(line)
     }
 
-  # close file 
+
+
+
   else 
     if ERRORS then puts "ERROR: rake rsbc failed on   " + path.to_s end
   end
@@ -52,6 +57,7 @@ end
 data.crunch
 
 #============================ Interactive portion of program =========================
+puts "type help for commands, 'q' to quit"
 print "enter command: "
 line = gets.chomp.split(" ")
 menu = line[0]

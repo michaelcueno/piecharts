@@ -2,7 +2,10 @@ class Stats
 
   def initialize()
   
+    # This is the main data for the program. All validations are in this hash map, where the 
+    # validation tag (app~model~id) is used as the tag and the validation specifics as the value.
     @validations = Hash.new  #[ id => validation ]
+
     @val_indexable = Array.new  # for easy query using an index number
     @current_index = 0
     @apps = AppDatabase.new  # stores an easy to navigate database of apps which have models which have validaitons
@@ -452,4 +455,22 @@ class Stats
     end
 
   end
+
+
+  # Add new app method for app database
+  def add_app(name)
+    apps.add(name)
+  end
+
+  def list_apps() 
+    apps.list_apps()
+    puts "Enter an app name to get models contained in it: "
+    app = gets.chomp
+    if data.list_models(app) then 
+      puts "Enter model to get validations: "
+      model = gets.chomp
+      apps.list_validations(app, model)
+    end
+  end
+
 end
